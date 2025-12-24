@@ -1,0 +1,94 @@
+.numpad {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    width: 400px;
+    max-width: 95vw;
+}
+
+.numpad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.numpad-header h3 {
+    font-size: var(--font-xl);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.numpad-display {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.numpad-value {
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    color: var(--accent-primary);
+    letter-spacing: 4px;
+}
+
+.numpad-count {
+    font-size: var(--font-md);
+    color: var(--text-muted);
+}
+
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.numpad-btn {
+    height: 80px;
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.numpad-btn:hover {
+    background: var(--bg-hover);
+    transform: scale(1.02);
+}
+
+.numpad-btn:active {
+    transform: scale(0.95);
+    background: var(--accent-primary);
+    color: #000;
+}
+
+.numpad-btn-action {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+.numpad-btn-action:hover {
+    color: var(--accent-danger);
+}
+
+.numpad-submit {
+    width: 100%;
+}
+
+.numpad-submit.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}

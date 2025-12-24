@@ -1,0 +1,102 @@
+.product-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-card.in-cart {
+    border-color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--bg-card), rgba(245, 158, 11, 0.1));
+}
+
+.product-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-xs);
+    font-weight: 700;
+    border-radius: 0 var(--radius-lg) 0 var(--radius-md);
+}
+
+.product-badge.kitchen {
+    background: var(--accent-secondary);
+    color: #fff;
+}
+
+.product-badge.bar {
+    background: var(--cat-beer);
+    color: #000;
+}
+
+.product-icon {
+    font-size: 56px;
+    margin-bottom: var(--spacing-md);
+    line-height: 1;
+}
+
+.product-name {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.2;
+}
+
+.product-price {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.product-add-btn {
+    width: 100%;
+    min-height: 56px;
+}
+
+.product-quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+    justify-content: center;
+}
+
+.quantity-btn {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    min-width: 56px;
+    min-height: 56px;
+    border: 2px solid var(--bg-hover);
+}
+
+.quantity-btn:hover {
+    border-color: var(--accent-primary);
+}
+
+.quantity-btn.add {
+    background: var(--accent-primary);
+    color: #000;
+    border-color: var(--accent-primary);
+}
+
+.quantity-display {
+    font-size: var(--font-2xl);
+    font-weight: 800;
+    color: var(--accent-primary);
+    min-width: 50px;
+}

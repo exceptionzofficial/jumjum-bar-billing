@@ -1,0 +1,185 @@
+.order-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.order-modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    width: 500px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.4s ease-out;
+}
+
+.order-success-banner {
+    background: linear-gradient(135deg, var(--accent-secondary), #059669);
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: #fff;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-md);
+    animation: bounce 1s ease-out;
+}
+
+.order-success-banner h2 {
+    font-size: var(--font-xl);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.order-success-banner p {
+    font-size: var(--font-md);
+    opacity: 0.9;
+    margin: 0;
+}
+
+.order-content {
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.order-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.order-section h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-lg);
+    color: var(--cat-beer);
+    margin-bottom: var(--spacing-md);
+}
+
+.order-section.kitchen h3 {
+    color: var(--accent-secondary);
+}
+
+.sent-badge {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-secondary);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 700;
+    margin-left: auto;
+    animation: pulse 2s infinite;
+}
+
+.order-customer {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+}
+
+.order-customer p {
+    margin: 0;
+    font-size: var(--font-md);
+}
+
+.order-customer p+p {
+    margin-top: var(--spacing-xs);
+    color: var(--text-secondary);
+}
+
+.order-items {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    font-size: var(--font-md);
+    border-bottom: 1px solid var(--bg-hover);
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-totals {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-md);
+    color: var(--text-secondary);
+}
+
+.order-total-row.grand {
+    border-top: 2px solid var(--bg-hover);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--accent-primary);
+}
+
+.order-timestamp {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--font-sm);
+    margin: 0;
+}
+
+.order-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+    border-top: 2px solid var(--bg-hover);
+}
+
+@media print {
+    .order-overlay {
+        position: static;
+        background: #fff;
+    }
+
+    .order-modal {
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+    }
+
+    .order-actions {
+        display: none;
+    }
+
+    .order-success-banner {
+        background: #333;
+        color: #fff;
+    }
+}
