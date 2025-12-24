@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { categories, menuItems } from '../data/menuItems';
 import ProductCard from './ProductCard';
 import './MenuGrid.css';
 
-function MenuGrid({ cart, onAdd, onRemove }) {
+const categories = [
+    { id: 'all', name: 'All Items', color: '#6b7280' },
+    { id: 'drinks', name: 'Drinks', color: '#3b82f6' },
+    { id: 'beer', name: 'Beer', color: '#d4a853' },
+    { id: 'cocktails', name: 'Cocktails', color: '#ec4899' },
+    { id: 'food', name: 'Food', color: '#22c55e' },
+    { id: 'snacks', name: 'Snacks', color: '#a855f7' },
+];
+
+function MenuGrid({ menuItems, cart, onAdd, onRemove }) {
     const [activeCategory, setActiveCategory] = useState('all');
 
     const filteredItems = activeCategory === 'all'
         ? menuItems
         : menuItems.filter(item => item.category === activeCategory);
 
-    const getItemQuantity = (itemId) => {
-        const cartItem = cart.find(item => item.id === itemId);
+    const getItemQuantity = (item) => {
+        const cartItem = cart.find(i => i.itemId === item.itemId);
         return cartItem ? cartItem.quantity : 0;
     };
 
@@ -23,37 +31,36 @@ function MenuGrid({ cart, onAdd, onRemove }) {
                     <button
                         key={cat.id}
                         className={`category-tab ${activeCategory === cat.id ? 'active' : ''}`}
-                        style={{
-                            '--cat-color': cat.color,
-                            borderColor: activeCategory === cat.id ? cat.color : 'transparent'
-                        }}
+                        style={{ '--cat-color': cat.color }}
                         onClick={() => setActiveCategory(cat.id)}
                     >
-                        <span className="category-icon">
-                            {cat.id === 'all' && '🔷'}
-                            {cat.id === 'drinks' && '🥤'}
-                            {cat.id === 'beer' && '🍺'}
-                            {cat.id === 'cocktails' && '🍸'}
-                            {cat.id === 'food' && '🍗'}
-                            {cat.id === 'snacks' && '🍟'}
-                        </span>
                         <span className="category-name">{cat.name}</span>
-                        {cat.isKitchen && <span className="kitchen-badge">Kitchen</span>}
+                        {cat.id !== 'all' && (
+                            <span className="category-count">
+                                {menuItems.filter(i => i.category === cat.id).length}
+                            </span>
+                        )}
                     </button>
                 ))}
             </div>
 
             {/* Products Grid */}
             <div className="products-grid">
-                {filteredItems.map(item => (
-                    <ProductCard
-                        key={item.id}
-                        item={item}
-                        quantity={getItemQuantity(item.id)}
-                        onAdd={onAdd}
-                        onRemove={onRemove}
-                    />
-                ))}
+                {filteredItems.length === 0 ? (
+                    <div className="no-items">
+                        <p>No items found in this category</p>
+                    </div>
+                ) : (
+                    filteredItems.map(item => (
+                        <ProductCard
+                            key={item.itemId}
+                            item={item}
+                            quantity={getItemQuantity(item)}
+                            onAdd={onAdd}
+                            onRemove={onRemove}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );

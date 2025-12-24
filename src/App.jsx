@@ -1,39 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
 import CustomerForm from './components/CustomerForm';
 import MenuGrid from './components/MenuGrid';
 import Cart from './components/Cart';
 import OrderSummary from './components/OrderSummary';
-import { generateOrderId, separateOrders } from './utils/formatters';
+import { menuApi, billingApi } from './services/api';
+import { separateOrders } from './utils/formatters';
 import './App.css';
 
-function App() {
+function BillingApp() {
   const [customer, setCustomer] = useState({ name: '', phone: '' });
   const [cart, setCart] = useState([]);
   const [completedOrder, setCompletedOrder] = useState(null);
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load menu items from API
+  useEffect(() => {
+    loadMenuItems();
+  }, []);
+
+  const loadMenuItems = async () => {
+    try {
+      setLoading(true);
+      const items = await menuApi.getAll();
+      setMenuItems(items);
+    } catch (error) {
+      console.error('Failed to load menu items:', error);
+      toast.error('Failed to load menu. Check server connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Add item to cart
   const handleAddItem = (item) => {
     setCart(prev => {
-      const existing = prev.find(i => i.id === item.id);
+      const existing = prev.find(i => i.itemId === item.itemId);
       if (existing) {
         return prev.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.itemId === item.itemId ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
 
-    // Quick feedback
     toast.success(`Added ${item.name}`, {
       duration: 1000,
-      icon: item.isKitchen ? '🍳' : '🍺',
       style: {
-        background: '#252542',
-        color: '#fff',
-        fontSize: '18px',
-        padding: '16px',
+        background: 'var(--bg-card)',
+        color: 'var(--text-primary)',
+        border: '1px solid var(--border-color)',
       },
     });
   };
@@ -41,13 +60,13 @@ function App() {
   // Remove item from cart
   const handleRemoveItem = (item) => {
     setCart(prev => {
-      const existing = prev.find(i => i.id === item.id);
+      const existing = prev.find(i => i.itemId === item.itemId);
       if (existing && existing.quantity > 1) {
         return prev.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i
+          i.itemId === item.itemId ? { ...i, quantity: i.quantity - 1 } : i
         );
       }
-      return prev.filter(i => i.id !== item.id);
+      return prev.filter(i => i.itemId !== item.itemId);
     });
   };
 
@@ -55,72 +74,54 @@ function App() {
   const handleClearCart = () => {
     setCart([]);
     toast('Cart cleared', {
-      icon: '🗑️',
       style: {
-        background: '#252542',
-        color: '#fff',
-        fontSize: '18px',
-        padding: '16px',
+        background: 'var(--bg-card)',
+        color: 'var(--text-primary)',
+        border: '1px solid var(--border-color)',
       },
     });
   };
 
   // Place order
-  const handlePlaceOrder = () => {
-    const orderId = generateOrderId();
-    const timestamp = new Date().toISOString();
-    const { kitchenItems, barItems } = separateOrders(cart);
+  const handlePlaceOrder = async () => {
+    try {
+      const { kitchenItems, barItems } = separateOrders(cart);
 
-    // Create order object
-    const order = {
-      orderId,
-      timestamp,
-      customer,
-      cart,
-      kitchenItems,
-      barItems,
-    };
-
-    // Save order to localStorage (for kitchen dashboard to pick up)
-    const existingOrders = JSON.parse(localStorage.getItem('jumjum_orders') || '[]');
-    localStorage.setItem('jumjum_orders', JSON.stringify([...existingOrders, order]));
-
-    // If there are kitchen items, save them separately for kitchen notification
-    if (kitchenItems.length > 0) {
-      const kitchenOrders = JSON.parse(localStorage.getItem('jumjum_kitchen_orders') || '[]');
-      const kitchenOrder = {
-        orderId,
-        timestamp,
+      // Create bill via API
+      const result = await billingApi.create({
         customer,
-        items: kitchenItems,
-        status: 'pending',
-      };
-      localStorage.setItem('jumjum_kitchen_orders', JSON.stringify([...kitchenOrders, kitchenOrder]));
+        items: cart,
+        paymentMethod: 'cash',
+      });
 
-      toast.success('Kitchen notified! 🍳', {
-        duration: 2000,
+      const order = {
+        orderId: result.data.billId || result.data.billid,
+        timestamp: result.data.createdAt,
+        customer,
+        cart,
+        kitchenItems,
+        barItems,
+      };
+
+      // Set completed order to show summary
+      setCompletedOrder(order);
+
+      // Show success
+      toast.success('Order placed successfully!', {
+        duration: 3000,
         style: {
-          background: '#10b981',
+          background: '#22c55e',
           color: '#fff',
-          fontSize: '20px',
-          padding: '20px',
         },
       });
+
+      // Reload menu items to get updated stock
+      loadMenuItems();
+
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      toast.error('Failed to place order. Please try again.');
     }
-
-    // Set completed order to show summary
-    setCompletedOrder(order);
-
-    // Show success
-    toast.success('Order placed successfully! 🎉', {
-      duration: 3000,
-      style: {
-        background: '#10b981',
-        color: '#fff',
-        fontSize: '20px',
-        padding: '20px',
-      },
-    });
   };
 
   // Start new order
@@ -129,6 +130,18 @@ function App() {
     setCart([]);
     setCustomer({ name: '', phone: '' });
   };
+
+  if (loading) {
+    return (
+      <div className="app loading-screen">
+        <div className="loading-content">
+          <div className="loading-logo">JJ</div>
+          <h2>JumJum</h2>
+          <p>Connecting to server...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
@@ -144,6 +157,7 @@ function App() {
           />
 
           <MenuGrid
+            menuItems={menuItems}
             cart={cart}
             onAdd={handleAddItem}
             onRemove={handleRemoveItem}
@@ -170,6 +184,14 @@ function App() {
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <BillingApp />
+    </ThemeProvider>
   );
 }
 
