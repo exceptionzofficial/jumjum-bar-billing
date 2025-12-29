@@ -1,23 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
-import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import Dashboard from './components/Dashboard';
 import CustomerForm from './components/CustomerForm';
 import MenuGrid from './components/MenuGrid';
 import Cart from './components/Cart';
 import OrderSummary from './components/OrderSummary';
+import BillHistory from './components/BillHistory';
+import Settings from './components/Settings';
 import { menuApi, billingApi } from './services/api';
 import { separateOrders } from './utils/formatters';
 import './App.css';
 
 function BillingApp() {
+  const [activePage, setActivePage] = useState('dashboard');
   const [customer, setCustomer] = useState({ name: '', phone: '' });
   const [cart, setCart] = useState([]);
   const [completedOrder, setCompletedOrder] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user] = useState({ name: 'Staff', role: 'bar' });
 
-  // Load menu items from API
   useEffect(() => {
     loadMenuItems();
   }, []);
@@ -35,7 +39,6 @@ function BillingApp() {
     }
   };
 
-  // Add item to cart
   const handleAddItem = (item) => {
     setCart(prev => {
       const existing = prev.find(i => i.itemId === item.itemId);
@@ -46,18 +49,9 @@ function BillingApp() {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-
-    toast.success(`Added ${item.name}`, {
-      duration: 1000,
-      style: {
-        background: 'var(--bg-card)',
-        color: 'var(--text-primary)',
-        border: '1px solid var(--border-color)',
-      },
-    });
+    toast.success(`Added ${item.name}`, { duration: 1000 });
   };
 
-  // Remove item from cart
   const handleRemoveItem = (item) => {
     setCart(prev => {
       const existing = prev.find(i => i.itemId === item.itemId);
@@ -70,24 +64,14 @@ function BillingApp() {
     });
   };
 
-  // Clear cart
   const handleClearCart = () => {
     setCart([]);
-    toast('Cart cleared', {
-      style: {
-        background: 'var(--bg-card)',
-        color: 'var(--text-primary)',
-        border: '1px solid var(--border-color)',
-      },
-    });
+    toast('Cart cleared');
   };
 
-  // Place order
   const handlePlaceOrder = async () => {
     try {
       const { kitchenItems, barItems } = separateOrders(cart);
-
-      // Create bill via API
       const result = await billingApi.create({
         customer,
         items: cart,
@@ -103,35 +87,63 @@ function BillingApp() {
         barItems,
       };
 
-      // Set completed order to show summary
       setCompletedOrder(order);
-
-      // Show success
-      toast.success('Order placed successfully!', {
-        duration: 3000,
-        style: {
-          background: '#22c55e',
-          color: '#fff',
-        },
-      });
-
-      // Reload menu items to get updated stock
+      toast.success('Order placed successfully!');
       loadMenuItems();
-
     } catch (error) {
       console.error('Failed to place order:', error);
       toast.error('Failed to place order. Please try again.');
     }
   };
 
-  // Start new order
   const handleNewOrder = () => {
     setCompletedOrder(null);
     setCart([]);
     setCustomer({ name: '', phone: '' });
   };
 
-  if (loading) {
+  const handleLogout = () => {
+    toast.success('Logged out');
+    // In real app, redirect to login
+  };
+
+  const renderPage = () => {
+    switch (activePage) {
+      case 'dashboard':
+        return <Dashboard onNavigate={setActivePage} />;
+      case 'history':
+        return <BillHistory />;
+      case 'settings':
+        return <Settings user={user} onLogout={handleLogout} />;
+      case 'newbill':
+      default:
+        return (
+          <>
+            <div className="app-content">
+              <CustomerForm customer={customer} onCustomerChange={setCustomer} />
+              <MenuGrid
+                menuItems={menuItems}
+                cart={cart}
+                onAdd={handleAddItem}
+                onRemove={handleRemoveItem}
+              />
+            </div>
+            <aside className="app-sidebar">
+              <Cart
+                cart={cart}
+                customer={customer}
+                onAdd={handleAddItem}
+                onRemove={handleRemoveItem}
+                onClear={handleClearCart}
+                onPlaceOrder={handlePlaceOrder}
+              />
+            </aside>
+          </>
+        );
+    }
+  };
+
+  if (loading && activePage === 'newbill') {
     return (
       <div className="app loading-screen">
         <div className="loading-content">
@@ -144,36 +156,16 @@ function BillingApp() {
   }
 
   return (
-    <div className="app">
+    <div className="app-layout">
       <Toaster position="top-center" />
-
-      <Header />
-
+      <Sidebar
+        activePage={activePage}
+        onPageChange={setActivePage}
+        user={user}
+        onLogout={handleLogout}
+      />
       <main className="app-main">
-        <div className="app-content">
-          <CustomerForm
-            customer={customer}
-            onCustomerChange={setCustomer}
-          />
-
-          <MenuGrid
-            menuItems={menuItems}
-            cart={cart}
-            onAdd={handleAddItem}
-            onRemove={handleRemoveItem}
-          />
-        </div>
-
-        <aside className="app-sidebar">
-          <Cart
-            cart={cart}
-            customer={customer}
-            onAdd={handleAddItem}
-            onRemove={handleRemoveItem}
-            onClear={handleClearCart}
-            onPlaceOrder={handlePlaceOrder}
-          />
-        </aside>
+        {renderPage()}
       </main>
 
       {completedOrder && (
