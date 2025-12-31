@@ -239,17 +239,24 @@
     flex: 1;
 }
 
-/* Print Styles - Compact Thermal */
+/* Print Styles - Compact Thermal 72mm */
 @media print {
     @page {
-        size: 80mm auto;
-        margin: 0;
+        size: 72mm auto;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        color-adjust: exact !important;
+        margin-top: 0 !important;
     }
 
     body * {
@@ -265,18 +272,21 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: 80mm;
+        width: 72mm;
         background: #fff !important;
-        padding: 0;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     .order-modal {
-        max-width: 80mm;
-        width: 80mm;
+        max-width: 72mm;
+        width: 72mm;
         border-radius: 0;
         box-shadow: none;
         max-height: none;
         background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .no-print {
@@ -284,7 +294,8 @@
     }
 
     .compact-bill {
-        padding: 3mm;
+        padding: 2mm;
+        margin: 0 !important;
         font-size: 11px;
         color: #000 !important;
         background: #fff !important;
