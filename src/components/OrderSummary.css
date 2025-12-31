@@ -181,6 +181,42 @@
     margin-bottom: 8px;
 }
 
+/* Payment Breakdown Section */
+.bill-payment-section {
+    padding: 8px 0;
+}
+
+.bill-payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 0;
+}
+
+.bill-payment-row.already-paid {
+    color: #000;
+}
+
+.bill-payment-row.need-to-pay {
+    font-size: 14px;
+    font-weight: 900;
+    padding: 8px 0;
+    border-top: 1px dashed #000;
+    margin-top: 6px;
+}
+
+.need-to-pay-amount {
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.need-to-pay-words {
+    font-weight: 800;
+    font-size: 11px;
+}
+
 /* Footer */
 .bill-footer {
     text-align: center;
@@ -329,6 +365,33 @@
 
     .bill-words {
         font-size: 10px;
+        color: #000 !important;
+    }
+
+    /* Payment breakdown print styles */
+    .bill-payment-section {
+        color: #000 !important;
+    }
+
+    .bill-payment-row {
+        font-size: 11px;
+        font-weight: 800 !important;
+        color: #000 !important;
+    }
+
+    .bill-payment-row.need-to-pay {
+        font-size: 14px;
+        font-weight: 900 !important;
+    }
+
+    .need-to-pay-amount {
+        font-size: 16px;
+        font-weight: 900 !important;
+        color: #000 !important;
+    }
+
+    .need-to-pay-words {
+        font-weight: 800 !important;
         color: #000 !important;
     }
 

@@ -24,6 +24,7 @@ function BillingApp() {
 
   // Edit bill state
   const [editingBill, setEditingBill] = useState(null);
+  const [originalBillItems, setOriginalBillItems] = useState([]); // Track original items for payment breakdown
 
   useEffect(() => {
     loadMenuItems();
@@ -110,7 +111,7 @@ function BillingApp() {
     }
   };
 
-  // Update bill when editing
+  // Update bill when editing (keep open and print)
   const handleUpdateBill = async () => {
     if (!editingBill) return;
 
@@ -122,7 +123,30 @@ function BillingApp() {
         status: 'open',
       });
 
-      toast.success('Bill updated!');
+      // Calculate already paid (from original bill)
+      const alreadyPaidTotal = originalBillItems.reduce(
+        (sum, item) => sum + (item.price * item.quantity), 0
+      );
+
+      // Create order for printing with payment breakdown
+      const order = {
+        orderId: billId,
+        timestamp: new Date().toISOString(),
+        customer,
+        cart,
+        kitchenItems: cart.filter(i => i.isKitchen),
+        barItems: cart.filter(i => !i.isKitchen),
+        isUpdate: true,
+        alreadyPaidItems: originalBillItems, // Items already paid
+        alreadyPaidTotal: alreadyPaidTotal,
+      };
+
+      setCompletedOrder(order);
+
+      // Update original items for next update
+      setOriginalBillItems([...cart]);
+
+      toast.success('Bill updated! Print to show payment.');
       loadMenuItems();
     } catch (error) {
       console.error('Failed to update bill:', error);
@@ -166,6 +190,7 @@ function BillingApp() {
     setEditingBill(bill);
     setCustomer(bill.customer || { name: '', phone: '' });
     setCart(bill.items || []);
+    setOriginalBillItems(bill.items || []); // Store original items for payment tracking
     setActivePage('newbill');
     toast.success(`Editing bill ${bill.billid || bill.billId}`);
   };
@@ -175,6 +200,7 @@ function BillingApp() {
     setCart([]);
     setCustomer({ name: '', phone: '', tableNumber: '' });
     setEditingBill(null);
+    setOriginalBillItems([]);
   };
 
   const handleLogout = () => {

@@ -21,6 +21,11 @@ function OrderSummary({ order, onClose, onNewOrder }) {
     const totalItems = order.cart.reduce((sum, item) => sum + item.quantity, 0);
     const total = subtotal; // No GST for this format
 
+    // Check if this is an update with already paid items
+    const isUpdate = order.isUpdate && order.alreadyPaidItems && order.alreadyPaidItems.length > 0;
+    const alreadyPaidTotal = order.alreadyPaidTotal || 0;
+    const needToPay = total - alreadyPaidTotal;
+
     // Generate bill number from order ID
     const getBillNo = () => {
         const match = order.orderId?.match(/\d+/);
@@ -55,7 +60,7 @@ function OrderSummary({ order, onClose, onNewOrder }) {
                 <div className="modal-header no-print">
                     <div className="success-badge">
                         <CheckCircle size={20} />
-                        <span>Order Confirmed</span>
+                        <span>{isUpdate ? 'Bill Updated' : 'Order Confirmed'}</span>
                     </div>
                     <button className="btn btn-ghost btn-icon" onClick={onClose}>
                         <X size={20} />
@@ -132,15 +137,36 @@ function OrderSummary({ order, onClose, onNewOrder }) {
 
                     <div className="bill-divider-dashed"></div>
 
-                    {/* Total */}
+                    {/* Grand Total */}
                     <div className="bill-total">
-                        <span className="total-label">TOTAL AMT :</span>
+                        <span className="total-label">GRAND TOTAL :</span>
                         <span className="total-value">{total.toFixed(2)}</span>
                     </div>
 
                     <div className="bill-words">
                         {numberToWords(Math.round(total))} Only
                     </div>
+
+                    {/* Already Paid & Need to Pay - Only show for updates */}
+                    {isUpdate && needToPay > 0 && (
+                        <>
+                            <div className="bill-divider-dashed"></div>
+
+                            <div className="bill-payment-section">
+                                <div className="bill-payment-row already-paid">
+                                    <span>Already Paid :</span>
+                                    <span>{alreadyPaidTotal.toFixed(2)}</span>
+                                </div>
+                                <div className="bill-payment-row need-to-pay">
+                                    <span>NEED TO PAY :</span>
+                                    <span className="need-to-pay-amount">{needToPay.toFixed(2)}</span>
+                                </div>
+                                <div className="bill-words need-to-pay-words">
+                                    {numberToWords(Math.round(needToPay))} Only
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     <div className="bill-divider-dashed"></div>
 
