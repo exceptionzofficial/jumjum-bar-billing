@@ -248,54 +248,69 @@
     flex: 1;
 }
 
-/* Print Styles - Compact Thermal 72mm */
+/* Print Styles - Compact Thermal 72mm x auto height */
+/* DIMENSIONS: Width = 72mm, Height = auto (fits content) */
 @media print {
     @page {
         size: 72mm auto;
+        /* Width: 72mm, Height: auto to fit content */
         margin: 0 !important;
         padding: 0 !important;
     }
 
+    /* Reset everything */
     html,
     body {
         margin: 0 !important;
         padding: 0 !important;
+        width: 72mm !important;
+        height: auto !important;
+        overflow: visible !important;
     }
 
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        margin-top: 0 !important;
-    }
-
+    /* Hide everything first */
     body * {
         visibility: hidden;
     }
 
+    /* Only show the invoice content */
     .order-overlay,
-    .order-overlay * {
-        visibility: visible;
+    .order-overlay .order-modal,
+    .order-overlay .compact-bill,
+    .order-overlay .compact-bill * {
+        visibility: visible !important;
     }
 
+    /* Position the overlay for printing */
     .order-overlay {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 72mm;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 72mm !important;
+        height: auto !important;
         background: #fff !important;
         padding: 0 !important;
         margin: 0 !important;
+        overflow: visible !important;
+        display: block !important;
     }
 
+    /* Modal container */
     .order-modal {
-        max-width: 72mm;
-        width: 72mm;
-        border-radius: 0;
-        box-shadow: none;
-        max-height: none;
+        position: static !important;
+        width: 72mm !important;
+        max-width: 72mm !important;
+        height: auto !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
         background: #fff !important;
         margin: 0 !important;
         padding: 0 !important;
+        overflow: visible !important;
+        transform: none !important;
     }
 
     .no-print {
@@ -310,6 +325,14 @@
         background: #fff !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        /* Prevent page breaks */
+        page-break-inside: avoid !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+        break-inside: avoid !important;
+        width: 72mm !important;
+        height: auto !important;
+        overflow: visible !important;
     }
 
     .compact-bill * {
