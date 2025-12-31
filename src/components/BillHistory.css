@@ -222,3 +222,65 @@
     background: rgba(244, 67, 54, 0.1);
     color: var(--danger);
 }
+
+/* Editable Row */
+.editable-row {
+    background: rgba(230, 81, 0, 0.04);
+}
+
+.editable-row:hover {
+    background: rgba(230, 81, 0, 0.08);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196F3;
+    border: 1px solid #2196F3;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.edit-btn:hover {
+    background: #2196F3;
+    color: white;
+}
+
+.close-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.close-btn:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+/* Badge styles */
+.badge-warning {
+    background: rgba(255, 152, 0, 0.12);
+    color: #FF9800;
+}

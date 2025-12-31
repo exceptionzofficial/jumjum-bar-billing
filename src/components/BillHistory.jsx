@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Search, X, Receipt, RefreshCw } from 'lucide-react';
+import { Search, X, RefreshCw, Edit, CheckCircle } from 'lucide-react';
 import { billingApi } from '../services/api';
 import './BillHistory.css';
 
-function BillHistory() {
+function BillHistory({ onEditBill }) {
     const [bills, setBills] = useState([]);
     const [filteredBills, setFilteredBills] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -69,6 +69,31 @@ function BillHistory() {
         });
     };
 
+    // Check if bill is from today and still open
+    const isEditableBill = (bill) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const billDate = new Date(bill.createdAt);
+        billDate.setHours(0, 0, 0, 0);
+        return billDate.getTime() === today.getTime() && bill.status !== 'completed';
+    };
+
+    const handleEditBill = (bill) => {
+        if (onEditBill) {
+            onEditBill(bill);
+        }
+    };
+
+    const handleCloseBill = async (bill, e) => {
+        e.stopPropagation();
+        try {
+            await billingApi.updateStatus(bill.billid || bill.billId, 'completed');
+            loadBills();
+        } catch (error) {
+            console.error('Failed to close bill:', error);
+        }
+    };
+
     if (loading) {
         return <div className="bill-history"><p>Loading bills...</p></div>;
     }
@@ -106,9 +131,9 @@ function BillHistory() {
                             <th>Bill ID</th>
                             <th>Customer</th>
                             <th>Date</th>
-                            <th>Payment</th>
+                            <th>Status</th>
                             <th>Amount</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +143,7 @@ function BillHistory() {
                             </tr>
                         ) : (
                             filteredBills.map(bill => (
-                                <tr key={bill.billid || bill.billId}>
+                                <tr key={bill.billid || bill.billId} className={isEditableBill(bill) ? 'editable-row' : ''}>
                                     <td className="bill-id-cell">{bill.billid || bill.billId}</td>
                                     <td>
                                         <div className="customer-cell">
@@ -133,15 +158,27 @@ function BillHistory() {
                                         <small style={{ color: 'var(--text-secondary)' }}>{formatTime(bill.createdAt)}</small>
                                     </td>
                                     <td>
-                                        <span className={`badge badge-${bill.paymentMethod === 'cash' ? 'success' : 'info'}`}>
-                                            {(bill.paymentMethod || 'cash').toUpperCase()}
+                                        <span className={`badge badge-${bill.status === 'completed' ? 'success' : 'warning'}`}>
+                                            {(bill.status || 'open').toUpperCase()}
                                         </span>
                                     </td>
                                     <td className="amount">{formatCurrency(bill.total)}</td>
                                     <td>
-                                        <button className="view-btn" onClick={() => setSelectedBill(bill)}>
-                                            View
-                                        </button>
+                                        <div className="action-buttons">
+                                            <button className="view-btn" onClick={() => setSelectedBill(bill)}>
+                                                View
+                                            </button>
+                                            {isEditableBill(bill) && onEditBill && (
+                                                <>
+                                                    <button className="edit-btn" onClick={() => handleEditBill(bill)}>
+                                                        <Edit size={14} /> Edit
+                                                    </button>
+                                                    <button className="close-btn" onClick={(e) => handleCloseBill(bill, e)}>
+                                                        <CheckCircle size={14} /> Close
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -180,8 +217,10 @@ function BillHistory() {
                                 <span className="detail-value">{formatDate(selectedBill.createdAt)} {formatTime(selectedBill.createdAt)}</span>
                             </div>
                             <div className="detail-row">
-                                <span className="detail-label">Payment</span>
-                                <span className="detail-value">{(selectedBill.paymentMethod || 'cash').toUpperCase()}</span>
+                                <span className="detail-label">Status</span>
+                                <span className={`badge badge-${selectedBill.status === 'completed' ? 'success' : 'warning'}`}>
+                                    {(selectedBill.status || 'open').toUpperCase()}
+                                </span>
                             </div>
 
                             <div className="items-section">

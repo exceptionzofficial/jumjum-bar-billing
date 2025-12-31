@@ -1,7 +1,7 @@
-import { Home, PlusCircle, History, Settings, LogOut } from 'lucide-react';
+import { Home, PlusCircle, History, Settings } from 'lucide-react';
 import './Sidebar.css';
 
-function Sidebar({ activePage, onPageChange, user, onLogout }) {
+function Sidebar({ activePage, onPageChange, user }) {
     const navItems = [
         { id: 'dashboard', label: 'Overview', icon: Home },
         { id: 'newbill', label: 'New Bill', icon: PlusCircle },

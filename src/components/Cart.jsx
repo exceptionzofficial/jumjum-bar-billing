@@ -1,8 +1,8 @@
-import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
+import { Plus, Minus, Trash2, ShoppingBag, Edit, Save, CheckCircle } from 'lucide-react';
 import { formatCurrency, separateOrders } from '../utils/formatters';
 import './Cart.css';
 
-function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder }) {
+function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder, onUpdateBill, onCloseBill, editingBill }) {
     const { kitchenItems, barItems } = separateOrders(cart);
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -11,13 +11,14 @@ function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder }) {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     const isValid = customer.name.trim() && cart.length > 0;
+    const isEditing = !!editingBill;
 
     return (
         <div className="cart">
             <div className="cart-header">
                 <div className="cart-title">
                     <ShoppingBag size={20} />
-                    <h2>Order Summary</h2>
+                    <h2>{isEditing ? 'Edit Bill' : 'Order Summary'}</h2>
                 </div>
                 {cart.length > 0 && (
                     <button className="btn btn-ghost btn-icon" onClick={onClear} title="Clear cart">
@@ -25,6 +26,14 @@ function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder }) {
                     </button>
                 )}
             </div>
+
+            {/* Editing Indicator */}
+            {isEditing && (
+                <div className="editing-indicator">
+                    <Edit size={16} />
+                    <span>Editing: {editingBill.billid || editingBill.billId}</span>
+                </div>
+            )}
 
             {cart.length === 0 ? (
                 <div className="cart-empty">
@@ -110,14 +119,37 @@ function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder }) {
                         </div>
                     </div>
 
-                    {/* Place Order */}
-                    <button
-                        className="btn btn-success btn-lg place-order-btn"
-                        onClick={onPlaceOrder}
-                        disabled={!isValid}
-                    >
-                        {!customer.name.trim() ? 'Enter Customer Name' : 'Place Order'}
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="cart-actions">
+                        {isEditing ? (
+                            <>
+                                <button
+                                    className="btn btn-primary btn-lg"
+                                    onClick={onUpdateBill}
+                                    disabled={!isValid}
+                                >
+                                    <Save size={18} />
+                                    Update & Keep Open
+                                </button>
+                                <button
+                                    className="btn btn-success btn-lg"
+                                    onClick={onCloseBill}
+                                    disabled={!isValid}
+                                >
+                                    <CheckCircle size={18} />
+                                    Close Bill
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                className="btn btn-success btn-lg place-order-btn"
+                                onClick={onPlaceOrder}
+                                disabled={!isValid}
+                            >
+                                {!customer.name.trim() ? 'Enter Customer Name' : 'Place Order'}
+                            </button>
+                        )}
+                    </div>
                 </>
             )}
         </div>

@@ -22,6 +22,9 @@ function BillingApp() {
   const [loading, setLoading] = useState(true);
   const [user] = useState({ name: 'Staff', role: 'bar' });
 
+  // Edit bill state
+  const [editingBill, setEditingBill] = useState(null);
+
   useEffect(() => {
     loadMenuItems();
   }, []);
@@ -66,9 +69,12 @@ function BillingApp() {
 
   const handleClearCart = () => {
     setCart([]);
+    setEditingBill(null);
+    setCustomer({ name: '', phone: '' });
     toast('Cart cleared');
   };
 
+  // Place order - backend auto-merges if phone exists today
   const handlePlaceOrder = async () => {
     try {
       const { kitchenItems, barItems } = separateOrders(cart);
@@ -76,6 +82,7 @@ function BillingApp() {
         customer,
         items: cart,
         paymentMethod: 'cash',
+        status: 'open',
       });
 
       const order = {
@@ -85,10 +92,17 @@ function BillingApp() {
         cart,
         kitchenItems,
         barItems,
+        isUpdate: result.isUpdate,
       };
 
       setCompletedOrder(order);
-      toast.success('Order placed successfully!');
+
+      if (result.isUpdate) {
+        toast.success('Items added to existing bill!');
+      } else {
+        toast.success('New order created!');
+      }
+
       loadMenuItems();
     } catch (error) {
       console.error('Failed to place order:', error);
@@ -96,15 +110,75 @@ function BillingApp() {
     }
   };
 
+  // Update bill when editing
+  const handleUpdateBill = async () => {
+    if (!editingBill) return;
+
+    try {
+      const billId = editingBill.billid || editingBill.billId;
+      await billingApi.update(billId, {
+        customer,
+        items: cart,
+        status: 'open',
+      });
+
+      toast.success('Bill updated!');
+      loadMenuItems();
+    } catch (error) {
+      console.error('Failed to update bill:', error);
+      toast.error('Failed to update bill.');
+    }
+  };
+
+  // Close bill
+  const handleCloseBill = async () => {
+    if (!editingBill) return;
+
+    try {
+      const billId = editingBill.billid || editingBill.billId;
+      await billingApi.update(billId, {
+        customer,
+        items: cart,
+        status: 'completed',
+      });
+
+      const order = {
+        orderId: billId,
+        timestamp: editingBill.createdAt,
+        customer,
+        cart,
+        kitchenItems: cart.filter(i => i.isKitchen),
+        barItems: cart.filter(i => !i.isKitchen),
+      };
+
+      setCompletedOrder(order);
+      setEditingBill(null);
+      toast.success('Bill closed!');
+      loadMenuItems();
+    } catch (error) {
+      console.error('Failed to close bill:', error);
+      toast.error('Failed to close bill.');
+    }
+  };
+
+  // Edit bill from history
+  const handleEditBill = (bill) => {
+    setEditingBill(bill);
+    setCustomer(bill.customer || { name: '', phone: '' });
+    setCart(bill.items || []);
+    setActivePage('newbill');
+    toast.success(`Editing bill ${bill.billid || bill.billId}`);
+  };
+
   const handleNewOrder = () => {
     setCompletedOrder(null);
     setCart([]);
     setCustomer({ name: '', phone: '' });
+    setEditingBill(null);
   };
 
   const handleLogout = () => {
     toast.success('Logged out');
-    // In real app, redirect to login
   };
 
   const renderPage = () => {
@@ -112,7 +186,7 @@ function BillingApp() {
       case 'dashboard':
         return <Dashboard onNavigate={setActivePage} />;
       case 'history':
-        return <BillHistory />;
+        return <BillHistory onEditBill={handleEditBill} />;
       case 'settings':
         return <Settings user={user} onLogout={handleLogout} />;
       case 'newbill':
@@ -136,6 +210,9 @@ function BillingApp() {
                 onRemove={handleRemoveItem}
                 onClear={handleClearCart}
                 onPlaceOrder={handlePlaceOrder}
+                onUpdateBill={handleUpdateBill}
+                onCloseBill={handleCloseBill}
+                editingBill={editingBill}
               />
             </aside>
           </>
@@ -162,7 +239,6 @@ function BillingApp() {
         activePage={activePage}
         onPageChange={setActivePage}
         user={user}
-        onLogout={handleLogout}
       />
       <main className="app-main">
         {renderPage()}
