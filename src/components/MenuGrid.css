@@ -81,6 +81,11 @@
 }
 
 /* Search */
+.search-container {
+    position: relative;
+    margin-bottom: 12px;
+}
+
 .search-wrapper {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -89,11 +94,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px;
 }
 
 .search-wrapper:focus-within {
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .search-wrapper input {
@@ -111,6 +116,116 @@
 
 .search-wrapper svg {
     color: var(--text-muted);
+}
+
+.search-clear {
+    background: var(--bg-hover);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+}
+
+.search-clear:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Search Suggestions Dropdown */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-top: 4px;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.15s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.1s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: var(--bg-hover);
+}
+
+.suggestion-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.suggestion-price {
+    font-weight: 700;
+    color: var(--success);
+}
+
+.suggestion-category {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.suggestion-category.drinks {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.suggestion-category.beer {
+    background: rgba(212, 168, 83, 0.15);
+    color: #d4a853;
+}
+
+.suggestion-category.cocktails {
+    background: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+}
+
+.suggestion-category.food {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.suggestion-category.snacks {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
 }
 
 /* Responsive */

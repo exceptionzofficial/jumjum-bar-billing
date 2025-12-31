@@ -43,6 +43,12 @@
     font-family: 'Courier New', Courier, monospace;
     font-size: 11px;
     line-height: 1.4;
+    font-weight: 700;
+}
+
+.compact-bill * {
+    font-weight: 700;
+    color: #000;
 }
 
 .bill-header {
@@ -52,7 +58,7 @@
 
 .company-name {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 900;
     margin-bottom: 4px;
 }
 
@@ -63,11 +69,12 @@
 .company-website {
     font-size: 10px;
     margin: 1px 0;
+    font-weight: 700;
 }
 
 .company-gstin,
 .company-mobile {
-    font-weight: 600;
+    font-weight: 800;
 }
 
 .bill-divider {
@@ -203,6 +210,12 @@
         margin: 0;
     }
 
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
     body * {
         visibility: hidden;
     }
@@ -217,7 +230,7 @@
         left: 0;
         top: 0;
         width: 80mm;
-        background: #fff;
+        background: #fff !important;
         padding: 0;
     }
 
@@ -227,6 +240,7 @@
         border-radius: 0;
         box-shadow: none;
         max-height: none;
+        background: #fff !important;
     }
 
     .no-print {
@@ -234,12 +248,24 @@
     }
 
     .compact-bill {
-        padding: 4mm;
-        font-size: 10px;
+        padding: 3mm;
+        font-size: 11px;
+        color: #000 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .compact-bill * {
+        color: #000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .company-name {
-        font-size: 12px;
+        font-size: 13px;
+        font-weight: 900 !important;
+        color: #000 !important;
     }
 
     .company-address,
@@ -247,22 +273,68 @@
     .company-mobile,
     .company-email,
     .company-website {
-        font-size: 9px;
+        font-size: 10px;
+        color: #000 !important;
+    }
+
+    .company-gstin,
+    .company-mobile {
+        font-weight: 700 !important;
+    }
+
+    .bill-divider,
+    .bill-footer {
+        border-color: #000 !important;
+    }
+
+    .bill-divider-dashed {
+        border-bottom: 1px dashed #000 !important;
+    }
+
+    .bill-info,
+    .bill-customer,
+    .bill-row {
+        font-size: 10px;
+        color: #000 !important;
     }
 
     .bill-table-header {
-        font-size: 8px;
+        font-size: 9px;
+        font-weight: 800 !important;
+        color: #000 !important;
     }
 
     .bill-item-row {
-        font-size: 9px;
+        font-size: 10px;
+        color: #000 !important;
+        padding: 2px 0;
+    }
+
+    .bill-subtotal {
+        font-size: 10px;
+        color: #000 !important;
     }
 
     .bill-total {
-        font-size: 12px;
+        font-size: 13px;
+        font-weight: 900 !important;
+        color: #000 !important;
     }
 
     .total-value {
-        font-size: 14px;
+        font-size: 15px;
+        font-weight: 900 !important;
+        color: #000 !important;
+    }
+
+    .bill-words {
+        font-size: 10px;
+        color: #000 !important;
+    }
+
+    .bill-footer {
+        font-size: 10px;
+        font-weight: 600 !important;
+        color: #000 !important;
     }
 }
