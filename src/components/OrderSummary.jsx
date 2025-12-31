@@ -1,28 +1,51 @@
 import { X, Printer, CheckCircle, Plus } from 'lucide-react';
-import { formatCurrency, separateOrders, formatPhoneNumber } from '../utils/formatters';
 import './OrderSummary.css';
 
+// Convert number to words (Indian format)
+const numberToWords = (num) => {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+        'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    if (num === 0) return 'Zero';
+    if (num < 20) return ones[num];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
+    if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 ? ' ' + numberToWords(num % 100) : '');
+    if (num < 100000) return numberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 ? ' ' + numberToWords(num % 1000) : '');
+    if (num < 10000000) return numberToWords(Math.floor(num / 100000)) + ' Lakh' + (num % 100000 ? ' ' + numberToWords(num % 100000) : '');
+    return numberToWords(Math.floor(num / 10000000)) + ' Crore' + (num % 10000000 ? ' ' + numberToWords(num % 10000000) : '');
+};
+
 function OrderSummary({ order, onClose, onNewOrder }) {
-    const { kitchenItems, barItems } = separateOrders(order.cart);
-
     const subtotal = order.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const tax = Math.round(subtotal * 0.05);
-    const total = subtotal + tax;
     const totalItems = order.cart.reduce((sum, item) => sum + item.quantity, 0);
+    const total = subtotal; // No GST for this format
 
-    const handlePrint = () => {
-        window.print();
+    // Generate bill number from order ID
+    const getBillNo = () => {
+        const match = order.orderId?.match(/\d+/);
+        return match ? `B-${match[0].slice(-4)}` : 'B-0000';
     };
 
     const formatDate = (timestamp) => {
-        return new Date(timestamp).toLocaleString('en-IN', {
+        return new Date(timestamp).toLocaleDateString('en-IN', {
             day: '2-digit',
-            month: 'short',
+            month: '2-digit',
             year: 'numeric',
+        }).replace(/\//g, '-');
+    };
+
+    const formatTime = (timestamp) => {
+        return new Date(timestamp).toLocaleTimeString('en-IN', {
             hour: '2-digit',
             minute: '2-digit',
+            second: '2-digit',
             hour12: true,
         });
+    };
+
+    const handlePrint = () => {
+        window.print();
     };
 
     return (
@@ -39,113 +62,91 @@ function OrderSummary({ order, onClose, onNewOrder }) {
                     </button>
                 </div>
 
-                {/* Invoice Content */}
-                <div className="invoice" id="invoice-print">
-                    {/* Invoice Header */}
-                    <div className="invoice-header">
-                        <div className="company-info">
-                            <div className="company-logo">JJ</div>
-                            <div className="company-details">
-                                <h1>JumJum</h1>
-                                <p>Bar & Kitchen</p>
-                            </div>
-                        </div>
-                        <div className="invoice-meta">
-                            <div className="invoice-title">TAX INVOICE</div>
-                            <div className="invoice-number">#{order.orderId?.slice(-8) || 'N/A'}</div>
-                        </div>
+                {/* Compact Invoice - Thermal Printer Format */}
+                <div className="invoice compact-bill" id="invoice-print">
+                    {/* Company Header */}
+                    <div className="bill-header">
+                        <div className="company-name">SRI KALKI JAM JAM RESORTS</div>
+                        <div className="company-address">17/A, Kalki Nagar,</div>
+                        <div className="company-address">Velampalayam, Kavundapadi,</div>
+                        <div className="company-address">Erode - 638455. Tamil Nadu.</div>
+                        <div className="company-gstin">GSTIN : 33AFBFS6465F1ZZ</div>
+                        <div className="company-mobile">Mobile : 9442917999</div>
+                        <div className="company-email">Email : srikalkijamjamresorts@gmail.com</div>
+                        <div className="company-website">Website : www.srikalkijamjamresorts.com</div>
                     </div>
 
-                    {/* Divider */}
-                    <div className="invoice-divider"></div>
+                    <div className="bill-divider"></div>
 
                     {/* Bill Info */}
-                    <div className="invoice-info">
-                        <div className="info-block">
-                            <span className="info-label">Bill To</span>
-                            <span className="info-value">{order.customer?.name || 'Customer'}</span>
-                            {order.customer?.phone && (
-                                <span className="info-sub">{formatPhoneNumber(order.customer.phone)}</span>
-                            )}
+                    <div className="bill-info">
+                        <div className="bill-row">
+                            <span>B.No: {getBillNo()}</span>
+                            <span>Date: {formatDate(order.timestamp)}</span>
                         </div>
-                        <div className="info-block right">
-                            <span className="info-label">Date & Time</span>
-                            <span className="info-value">{formatDate(order.timestamp)}</span>
+                        <div className="bill-row">
+                            <span></span>
+                            <span>Time: {formatTime(order.timestamp)}</span>
                         </div>
                     </div>
 
-                    {/* Items Table */}
-                    <div className="invoice-table">
-                        <div className="table-header">
-                            <span className="col-item">Item</span>
-                            <span className="col-qty">Qty</span>
-                            <span className="col-rate">Rate</span>
-                            <span className="col-amount">Amount</span>
-                        </div>
-
-                        {/* Bar Items */}
-                        {barItems.length > 0 && (
-                            <>
-                                <div className="table-section-header">Bar Items</div>
-                                {barItems.map((item, idx) => (
-                                    <div key={idx} className="table-row">
-                                        <span className="col-item">
-                                            <span className="item-name">{item.name}</span>
-                                            <span className="item-id">{item.itemId}</span>
-                                        </span>
-                                        <span className="col-qty">{item.quantity}</span>
-                                        <span className="col-rate">{formatCurrency(item.price)}</span>
-                                        <span className="col-amount">{formatCurrency(item.price * item.quantity)}</span>
-                                    </div>
-                                ))}
-                            </>
-                        )}
-
-                        {/* Kitchen Items */}
-                        {kitchenItems.length > 0 && (
-                            <>
-                                <div className="table-section-header">Kitchen Items</div>
-                                {kitchenItems.map((item, idx) => (
-                                    <div key={idx} className="table-row">
-                                        <span className="col-item">
-                                            <span className="item-name">{item.name}</span>
-                                            <span className="item-id">{item.itemId}</span>
-                                        </span>
-                                        <span className="col-qty">{item.quantity}</span>
-                                        <span className="col-rate">{formatCurrency(item.price)}</span>
-                                        <span className="col-amount">{formatCurrency(item.price * item.quantity)}</span>
-                                    </div>
-                                ))}
-                            </>
-                        )}
+                    <div className="bill-customer">
+                        <div>To   : {order.customer?.name || 'Cash Sales'}</div>
+                        <div>State Name:TamilNadu</div>
+                        <div>State Code:33</div>
                     </div>
 
-                    {/* Totals */}
-                    <div className="invoice-totals">
-                        <div className="totals-row">
-                            <span>Subtotal ({totalItems} items)</span>
-                            <span>{formatCurrency(subtotal)}</span>
-                        </div>
-                        <div className="totals-row">
-                            <span>GST @ 5%</span>
-                            <span>{formatCurrency(tax)}</span>
-                        </div>
-                        <div className="totals-row grand-total">
-                            <span>Total Amount</span>
-                            <span>{formatCurrency(total)}</span>
-                        </div>
+                    <div className="bill-divider-dashed"></div>
+
+                    {/* Items Table Header */}
+                    <div className="bill-table-header">
+                        <span className="col-name">ITEM NAME</span>
+                        <span className="col-qty">QTY</span>
+                        <span className="col-rate">RATE</span>
+                        <span className="col-amt">AMOUNT</span>
                     </div>
 
-                    {/* Invoice Footer */}
-                    <div className="invoice-footer">
-                        <div className="footer-note">
-                            Thank you for your visit!
-                        </div>
-                        <div className="footer-info">
-                            <span>Payment: Cash</span>
-                            <span>•</span>
-                            <span>GSTIN: 29AXXXX1234X1ZX</span>
-                        </div>
+                    <div className="bill-divider-thin"></div>
+
+                    {/* Items */}
+                    <div className="bill-items">
+                        {order.cart.map((item, idx) => (
+                            <div key={idx} className="bill-item-row">
+                                <span className="col-name">{item.name}</span>
+                                <span className="col-qty">{item.quantity}</span>
+                                <span className="col-rate">{item.price.toFixed(2)}</span>
+                                <span className="col-amt">{(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="bill-divider-thin"></div>
+
+                    {/* Subtotal */}
+                    <div className="bill-subtotal">
+                        <span className="col-name"></span>
+                        <span className="col-qty">{totalItems}</span>
+                        <span className="col-rate"></span>
+                        <span className="col-amt">{subtotal.toFixed(2)}</span>
+                    </div>
+
+                    <div className="bill-divider-dashed"></div>
+
+                    {/* Total */}
+                    <div className="bill-total">
+                        <span className="total-label">TOTAL AMT :</span>
+                        <span className="total-value">{total.toFixed(2)}</span>
+                    </div>
+
+                    <div className="bill-words">
+                        {numberToWords(Math.round(total))} Only
+                    </div>
+
+                    <div className="bill-divider-dashed"></div>
+
+                    {/* Footer */}
+                    <div className="bill-footer">
+                        For SRI KALKI JAM JAM RESORTS
                     </div>
                 </div>
 

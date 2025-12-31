@@ -13,10 +13,10 @@ function Sidebar({ activePage, onPageChange, user }) {
         <div className="sidebar">
             <div className="sidebar-header">
                 <div className="sidebar-logo">
-                    <div className="logo-icon">JJ</div>
+                    <div className="logo-icon">SK</div>
                     <div className="logo-text">
-                        <h1>JumJum</h1>
-                        <span>Staff Panel</span>
+                        <h1>SRI KALKI</h1>
+                        <span>Jam Jam Resorts</span>
                     </div>
                 </div>
             </div>

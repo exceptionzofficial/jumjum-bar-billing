@@ -15,7 +15,7 @@ import './App.css';
 
 function BillingApp() {
   const [activePage, setActivePage] = useState('dashboard');
-  const [customer, setCustomer] = useState({ name: '', phone: '' });
+  const [customer, setCustomer] = useState({ name: '', phone: '', tableNumber: '' });
   const [cart, setCart] = useState([]);
   const [completedOrder, setCompletedOrder] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
@@ -70,7 +70,7 @@ function BillingApp() {
   const handleClearCart = () => {
     setCart([]);
     setEditingBill(null);
-    setCustomer({ name: '', phone: '' });
+    setCustomer({ name: '', phone: '', tableNumber: '' });
     toast('Cart cleared');
   };
 
@@ -173,7 +173,7 @@ function BillingApp() {
   const handleNewOrder = () => {
     setCompletedOrder(null);
     setCart([]);
-    setCustomer({ name: '', phone: '' });
+    setCustomer({ name: '', phone: '', tableNumber: '' });
     setEditingBill(null);
   };
 
