@@ -203,14 +203,49 @@
     text-transform: uppercase;
 }
 
-.suggestion-category.drinks {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
+.suggestion-category.scotch {
+    background: rgba(201, 169, 98, 0.15);
+    color: #c9a962;
+}
+
+.suggestion-category.whisky {
+    background: rgba(212, 168, 83, 0.15);
+    color: #d4a853;
+}
+
+.suggestion-category.brandy {
+    background: rgba(160, 82, 45, 0.15);
+    color: #a0522d;
+}
+
+.suggestion-category.vodka {
+    background: rgba(135, 206, 235, 0.15);
+    color: #5ba3c4;
+}
+
+.suggestion-category.rum {
+    background: rgba(139, 69, 19, 0.15);
+    color: #8b4513;
+}
+
+.suggestion-category.gin {
+    background: rgba(0, 206, 209, 0.15);
+    color: #00ced1;
+}
+
+.suggestion-category.wine {
+    background: rgba(114, 47, 55, 0.15);
+    color: #722f37;
 }
 
 .suggestion-category.beer {
-    background: rgba(212, 168, 83, 0.15);
-    color: #d4a853;
+    background: rgba(245, 166, 35, 0.15);
+    color: #f5a623;
+}
+
+.suggestion-category.drinks {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
 }
 
 .suggestion-category.cocktails {

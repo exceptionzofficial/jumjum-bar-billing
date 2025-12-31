@@ -5,8 +5,15 @@ import './MenuGrid.css';
 
 const categories = [
     { id: 'all', name: 'All Items', color: '#6b7280' },
-    { id: 'drinks', name: 'Drinks', color: '#3b82f6' },
-    { id: 'beer', name: 'Beer', color: '#d4a853' },
+    { id: 'scotch', name: 'Scotch', color: '#c9a962' },
+    { id: 'whisky', name: 'Whisky', color: '#d4a853' },
+    { id: 'brandy', name: 'Brandy', color: '#a0522d' },
+    { id: 'vodka', name: 'Vodka', color: '#87ceeb' },
+    { id: 'rum', name: 'Rum', color: '#8b4513' },
+    { id: 'gin', name: 'Gin', color: '#00ced1' },
+    { id: 'wine', name: 'Wine', color: '#722f37' },
+    { id: 'beer', name: 'Beer', color: '#f5a623' },
+    { id: 'drinks', name: 'Other Drinks', color: '#3b82f6' },
     { id: 'cocktails', name: 'Cocktails', color: '#ec4899' },
     { id: 'food', name: 'Food', color: '#22c55e' },
     { id: 'snacks', name: 'Snacks', color: '#a855f7' },
