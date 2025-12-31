@@ -156,6 +156,15 @@
     padding: 4px 0;
 }
 
+/* GST Rows */
+.bill-gst-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 0;
+}
+
 /* Total */
 .bill-total {
     display: flex;

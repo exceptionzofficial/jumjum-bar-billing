@@ -5,9 +5,17 @@ import './Cart.css';
 function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder, onUpdateBill, onCloseBill, editingBill }) {
     const { kitchenItems, barItems } = separateOrders(cart);
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const tax = Math.round(subtotal * 0.05); // 5% GST
-    const total = subtotal + tax;
+    // Calculate subtotals separately
+    const barSubtotal = barItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const kitchenSubtotal = kitchenItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = barSubtotal + kitchenSubtotal;
+
+    // Different GST rates: 14.5% for liquor (bar), 5% for food (kitchen)
+    const liquorGST = Math.round(barSubtotal * 0.145); // 14.5% GST for liquor
+    const foodGST = Math.round(kitchenSubtotal * 0.05); // 5% GST for food
+    const totalTax = liquorGST + foodGST;
+
+    const total = subtotal + totalTax;
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     const isValid = customer.name.trim() && cart.length > 0;
@@ -109,10 +117,18 @@ function Cart({ cart, customer, onAdd, onRemove, onClear, onPlaceOrder, onUpdate
                             <span>Items ({totalItems})</span>
                             <span>{formatCurrency(subtotal)}</span>
                         </div>
-                        <div className="total-row">
-                            <span>GST (5%)</span>
-                            <span>{formatCurrency(tax)}</span>
-                        </div>
+                        {liquorGST > 0 && (
+                            <div className="total-row">
+                                <span>Liquor GST (14.5%)</span>
+                                <span>{formatCurrency(liquorGST)}</span>
+                            </div>
+                        )}
+                        {foodGST > 0 && (
+                            <div className="total-row">
+                                <span>Food GST (5%)</span>
+                                <span>{formatCurrency(foodGST)}</span>
+                            </div>
+                        )}
                         <div className="total-row grand-total">
                             <span>Total Amount</span>
                             <span>{formatCurrency(total)}</span>

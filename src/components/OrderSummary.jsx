@@ -17,9 +17,22 @@ const numberToWords = (num) => {
 };
 
 function OrderSummary({ order, onClose, onNewOrder }) {
-    const subtotal = order.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // Separate bar and kitchen items
+    const barItems = order.cart.filter(item => !item.isKitchen);
+    const kitchenItems = order.cart.filter(item => item.isKitchen);
+
+    // Calculate subtotals
+    const barSubtotal = barItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const kitchenSubtotal = kitchenItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = barSubtotal + kitchenSubtotal;
     const totalItems = order.cart.reduce((sum, item) => sum + item.quantity, 0);
-    const total = subtotal; // No GST for this format
+
+    // Different GST rates: 14.5% for liquor (bar), 5% for food (kitchen)
+    const liquorGST = Math.round(barSubtotal * 0.145);
+    const foodGST = Math.round(kitchenSubtotal * 0.05);
+    const totalTax = liquorGST + foodGST;
+
+    const total = subtotal + totalTax;
 
     // Check if this is an update with already paid items
     const isUpdate = order.isUpdate && order.alreadyPaidItems && order.alreadyPaidItems.length > 0;
@@ -134,6 +147,20 @@ function OrderSummary({ order, onClose, onNewOrder }) {
                         <span className="col-rate"></span>
                         <span className="col-amt">{subtotal.toFixed(2)}</span>
                     </div>
+
+                    {/* GST Breakdown */}
+                    {liquorGST > 0 && (
+                        <div className="bill-gst-row">
+                            <span>Liquor GST (14.5%)</span>
+                            <span>{liquorGST.toFixed(2)}</span>
+                        </div>
+                    )}
+                    {foodGST > 0 && (
+                        <div className="bill-gst-row">
+                            <span>Food GST (5%)</span>
+                            <span>{foodGST.toFixed(2)}</span>
+                        </div>
+                    )}
 
                     <div className="bill-divider-dashed"></div>
 
